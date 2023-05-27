@@ -1,0 +1,222 @@
+<html>
+<head>
+<title>TabbedScreen.dart</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #a9b7c6;}
+.s1 { color: #6a8759;}
+.s2 { color: #cc7832;}
+.s3 { color: #6897bb;}
+.s4 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+TabbedScreen.dart</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">'package:flutter/material.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'dart:ui'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:myapp/utils.dart'</span><span class="s2">;</span>
+<span class="s2">class </span><span class="s0">TabbedScreen </span><span class="s2">extends </span><span class="s0">StatelessWidget {</span>
+<span class="s0">@override</span>
+<span class="s0">Widget build(BuildContext context) {</span>
+<span class="s2">return </span><span class="s0">DefaultTabController(</span>
+<span class="s0">length: </span><span class="s3">4</span><span class="s2">,</span>
+<span class="s0">child: Scaffold(</span>
+<span class="s0">appBar: AppBar(</span>
+<span class="s0">bottom: TabBar(</span>
+<span class="s0">tabs: [</span>
+<span class="s0">Tab(icon: Icon(Icons.dashboard)</span><span class="s2">, </span><span class="s0">text: </span><span class="s1">'Dashboard'</span><span class="s0">)</span><span class="s2">,</span>
+<span class="s0">Tab(icon: Icon(Icons.list)</span><span class="s2">, </span><span class="s0">text: </span><span class="s1">'Machine List'</span><span class="s0">)</span><span class="s2">,</span>
+<span class="s0">Tab(icon: Icon(Icons.location_on)</span><span class="s2">, </span><span class="s0">text: </span><span class="s1">'Location'</span><span class="s0">)</span><span class="s2">,</span>
+<span class="s0">Tab(icon: Icon(Icons.notifications)</span><span class="s2">, </span><span class="s0">text: </span><span class="s1">'Notifications'</span><span class="s0">)</span><span class="s2">,</span>
+<span class="s0">]</span><span class="s2">,</span>
+<span class="s0">)</span><span class="s2">,</span>
+<span class="s0">title: Text(</span><span class="s1">'Tabbed Screen'</span><span class="s0">)</span><span class="s2">,</span>
+<span class="s0">)</span><span class="s2">,</span>
+<span class="s0">body: TabBarView(</span>
+<span class="s0">children: [</span>
+<span class="s0">DashboardScreen()</span><span class="s2">,</span>
+<span class="s0">MachineListScreen()</span><span class="s2">,</span>
+<span class="s0">LocationScreen()</span><span class="s2">,</span>
+<span class="s0">NotificationsScreen()</span><span class="s2">,</span>
+<span class="s0">]</span><span class="s2">,</span>
+<span class="s0">)</span><span class="s2">,</span>
+<span class="s0">)</span><span class="s2">,</span>
+<span class="s0">)</span><span class="s2">;</span>
+<span class="s0">}</span>
+<span class="s0">}</span>
+
+<span class="s2">class </span><span class="s0">DashboardScreen </span><span class="s2">extends </span><span class="s0">StatelessWidget {</span>
+<span class="s0">@override</span>
+<span class="s0">Widget build(BuildContext context) {</span>
+<span class="s2">return </span><span class="s0">Center(</span>
+<span class="s4">// child: Icon(Icons.dashboard, size: 350),</span>
+  <span class="s0">child: Stack(</span>
+    <span class="s0">children: [</span>
+      <span class="s0">Positioned(</span>
+        <span class="s4">// grouprhU (1:1481)</span>
+        <span class="s0">left: </span><span class="s3">147.8178710938</span><span class="s2">,</span>
+        <span class="s0">top: </span><span class="s3">0</span><span class="s2">,</span>
+        <span class="s0">child: Align(</span>
+          <span class="s0">child: SizedBox(</span>
+            <span class="s0">width: </span><span class="s3">99.49</span><span class="s2">,</span>
+            <span class="s0">height: </span><span class="s3">225.01</span><span class="s2">,</span>
+            <span class="s0">child: Image.asset(</span>
+              <span class="s1">'assets/page-1/images/group-f6E.png'</span><span class="s2">,</span>
+              <span class="s0">fit: BoxFit.contain</span><span class="s2">,</span>
+              <span class="s0">width: </span><span class="s3">99.49</span><span class="s2">,</span>
+              <span class="s0">height: </span><span class="s3">225.01</span><span class="s2">,</span>
+            <span class="s0">)</span><span class="s2">,</span>
+          <span class="s0">)</span><span class="s2">,</span>
+        <span class="s0">)</span><span class="s2">,</span>
+      <span class="s0">)</span><span class="s2">,</span>
+      <span class="s0">Positioned(</span>
+        <span class="s4">// image3YaJ (84:382)</span>
+        <span class="s0">left: </span><span class="s3">0</span><span class="s2">,</span>
+        <span class="s0">top: </span><span class="s3">169.3793945312</span><span class="s2">,</span>
+        <span class="s0">child: Align(</span>
+          <span class="s0">child: SizedBox(</span>
+            <span class="s0">width: </span><span class="s3">328</span><span class="s2">,</span>
+            <span class="s0">height: </span><span class="s3">241</span><span class="s2">,</span>
+            <span class="s0">child: ClipRRect(</span>
+              <span class="s0">borderRadius: BorderRadius.circular(</span><span class="s3">25</span><span class="s0">)</span><span class="s2">,</span>
+              <span class="s0">child: Image.asset(</span>
+                <span class="s1">'assets/page-1/images/image-3.png'</span><span class="s2">,</span>
+                <span class="s0">fit: BoxFit.cover</span><span class="s2">,</span>
+              <span class="s0">)</span><span class="s2">,</span>
+            <span class="s0">)</span><span class="s2">,</span>
+          <span class="s0">)</span><span class="s2">,</span>
+        <span class="s0">)</span><span class="s2">,</span>
+      <span class="s0">)</span><span class="s2">,</span>
+    <span class="s0">]</span><span class="s2">,</span>
+  <span class="s0">)</span><span class="s2">,</span>
+<span class="s0">)</span><span class="s2">;</span>
+<span class="s0">}</span>
+<span class="s0">}</span>
+
+<span class="s4">// class MachineListScreen extends StatelessWidget {</span>
+<span class="s4">// @override</span>
+<span class="s4">// Widget build(BuildContext context) {</span>
+<span class="s4">// return Center(</span>
+<span class="s4">// child: Icon(Icons.list, size: 350),</span>
+<span class="s4">//</span>
+<span class="s4">// );</span>
+<span class="s4">// }</span>
+<span class="s4">// }</span>
+<span class="s4">// import 'package:flutter/material.dart';</span>
+
+<span class="s2">class </span><span class="s0">MachineListScreen </span><span class="s2">extends </span><span class="s0">StatefulWidget {</span>
+  <span class="s0">@override</span>
+  <span class="s0">_MachineListScreenState createState() =&gt; _MachineListScreenState()</span><span class="s2">;</span>
+<span class="s0">}</span>
+
+<span class="s2">class </span><span class="s0">_MachineListScreenState </span><span class="s2">extends </span><span class="s0">State&lt;MachineListScreen&gt; {</span>
+  <span class="s0">List&lt;Machine&gt; machines = [</span>
+    <span class="s0">Machine(</span><span class="s1">&quot;Machine 1&quot;</span><span class="s2">, </span><span class="s1">&quot;Active&quot;</span><span class="s2">, </span><span class="s1">&quot;This machine is used for X&quot;</span><span class="s0">)</span><span class="s2">,</span>
+    <span class="s0">Machine(</span><span class="s1">&quot;Machine 2&quot;</span><span class="s2">, </span><span class="s1">&quot;Inactive&quot;</span><span class="s2">, </span><span class="s1">&quot;This machine is used for Y&quot;</span><span class="s0">)</span><span class="s2">,</span>
+    <span class="s0">Machine(</span><span class="s1">&quot;Machine 3&quot;</span><span class="s2">, </span><span class="s1">&quot;Active&quot;</span><span class="s2">, </span><span class="s1">&quot;This machine is used for Z&quot;</span><span class="s0">)</span><span class="s2">,</span>
+    <span class="s0">Machine(</span><span class="s1">&quot;Machine 4&quot;</span><span class="s2">, </span><span class="s1">&quot;Active&quot;</span><span class="s2">, </span><span class="s1">&quot;This machine is used for A&quot;</span><span class="s0">)</span><span class="s2">,</span>
+    <span class="s0">Machine(</span><span class="s1">&quot;Machine 5&quot;</span><span class="s2">, </span><span class="s1">&quot;Inactive&quot;</span><span class="s2">, </span><span class="s1">&quot;This machine is used for B&quot;</span><span class="s0">)</span><span class="s2">,</span>
+  <span class="s0">]</span><span class="s2">;</span>
+
+  <span class="s0">@override</span>
+  <span class="s0">Widget build(BuildContext context) {</span>
+    <span class="s2">return </span><span class="s0">Scaffold(</span>
+      <span class="s4">// appBar: AppBar(</span>
+      <span class="s4">//   title: Text('Machine List'),</span>
+      <span class="s4">// ),</span>
+      <span class="s0">body: ListView.builder(</span>
+        <span class="s0">itemCount: machines.length</span><span class="s2">,</span>
+        <span class="s0">itemBuilder: (context</span><span class="s2">, </span><span class="s0">index) {</span>
+          <span class="s2">return </span><span class="s0">ListTile(</span>
+            <span class="s0">leading: Text(</span>
+              <span class="s0">machines[index].machineName.substring(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">1</span><span class="s0">)</span><span class="s2">,</span>
+              <span class="s0">style: TextStyle(fontSize: </span><span class="s3">24</span><span class="s0">)</span><span class="s2">,</span>
+            <span class="s0">)</span><span class="s2">,</span>
+            <span class="s0">title: Text(machines[index].machineName)</span><span class="s2">,</span>
+            <span class="s0">onTap: () {</span>
+              <span class="s0">Navigator.push(</span>
+                <span class="s0">context</span><span class="s2">,</span>
+                <span class="s0">MaterialPageRoute(</span>
+                  <span class="s0">builder: (context) =&gt; MachineDetailsScreen(</span>
+                    <span class="s0">machine: machines[index]</span><span class="s2">,</span>
+                  <span class="s0">)</span><span class="s2">,</span>
+                <span class="s0">)</span><span class="s2">,</span>
+              <span class="s0">)</span><span class="s2">;</span>
+            <span class="s0">}</span><span class="s2">,</span>
+          <span class="s0">)</span><span class="s2">;</span>
+        <span class="s0">}</span><span class="s2">,</span>
+      <span class="s0">)</span><span class="s2">,</span>
+    <span class="s0">)</span><span class="s2">;</span>
+  <span class="s0">}</span>
+<span class="s0">}</span>
+
+<span class="s2">class </span><span class="s0">Machine {</span>
+  <span class="s2">final </span><span class="s0">String machineName</span><span class="s2">;</span>
+  <span class="s2">final </span><span class="s0">String status</span><span class="s2">;</span>
+  <span class="s2">final </span><span class="s0">String description</span><span class="s2">;</span>
+
+  <span class="s0">Machine(</span><span class="s2">this</span><span class="s0">.machineName</span><span class="s2">, this</span><span class="s0">.status</span><span class="s2">, this</span><span class="s0">.description)</span><span class="s2">;</span>
+<span class="s0">}</span>
+
+<span class="s2">class </span><span class="s0">MachineDetailsScreen </span><span class="s2">extends </span><span class="s0">StatelessWidget {</span>
+  <span class="s2">final </span><span class="s0">Machine machine</span><span class="s2">;</span>
+
+  <span class="s0">MachineDetailsScreen({required </span><span class="s2">this</span><span class="s0">.machine})</span><span class="s2">;</span>
+
+  <span class="s0">@override</span>
+  <span class="s0">Widget build(BuildContext context) {</span>
+    <span class="s2">return </span><span class="s0">Scaffold(</span>
+      <span class="s0">appBar: AppBar(</span>
+        <span class="s0">title: Text(</span><span class="s1">'Machine Details'</span><span class="s0">)</span><span class="s2">,</span>
+      <span class="s0">)</span><span class="s2">,</span>
+      <span class="s0">body: ListView(</span>
+        <span class="s0">children: [</span>
+          <span class="s0">DataTable(</span>
+            <span class="s0">columns: [</span>
+              <span class="s0">DataColumn(label: Text(</span><span class="s1">'Machine Name'</span><span class="s0">))</span><span class="s2">,</span>
+              <span class="s0">DataColumn(label: Text(</span><span class="s1">'Status'</span><span class="s0">))</span><span class="s2">,</span>
+              <span class="s0">DataColumn(label: Text(</span><span class="s1">'Description'</span><span class="s0">))</span><span class="s2">,</span>
+            <span class="s0">]</span><span class="s2">,</span>
+            <span class="s0">rows: [</span>
+              <span class="s0">DataRow(cells: [</span>
+                <span class="s0">DataCell(Text(machine.machineName))</span><span class="s2">,</span>
+                <span class="s0">DataCell(Text(machine.status))</span><span class="s2">,</span>
+                <span class="s0">DataCell(Text(machine.description))</span><span class="s2">,</span>
+              <span class="s0">])</span><span class="s2">,</span>
+            <span class="s0">]</span><span class="s2">,</span>
+          <span class="s0">)</span><span class="s2">,</span>
+        <span class="s0">]</span><span class="s2">,</span>
+      <span class="s0">)</span><span class="s2">,</span>
+    <span class="s0">)</span><span class="s2">;</span>
+  <span class="s0">}</span>
+<span class="s0">}</span>
+
+<span class="s4">// void main() {</span>
+<span class="s4">//   runApp(MaterialApp(home: MachineListScreen()));</span>
+<span class="s4">// }</span>
+
+
+<span class="s2">class </span><span class="s0">LocationScreen </span><span class="s2">extends </span><span class="s0">StatelessWidget {</span>
+<span class="s0">@override</span>
+<span class="s0">Widget build(BuildContext context) {</span>
+<span class="s2">return </span><span class="s0">Center(</span>
+<span class="s0">child: Icon(Icons.location_on</span><span class="s2">, </span><span class="s0">size: </span><span class="s3">350</span><span class="s0">)</span><span class="s2">,</span>
+<span class="s0">)</span><span class="s2">;</span>
+<span class="s0">}</span>
+<span class="s0">}</span>
+
+<span class="s2">class </span><span class="s0">NotificationsScreen </span><span class="s2">extends </span><span class="s0">StatelessWidget {</span>
+<span class="s0">@override</span>
+<span class="s0">Widget build(BuildContext context) {</span>
+<span class="s2">return </span><span class="s0">Center(</span>
+<span class="s0">child: Icon(Icons.notifications</span><span class="s2">, </span><span class="s0">size: </span><span class="s3">350</span><span class="s0">)</span><span class="s2">,</span>
+<span class="s0">)</span><span class="s2">;</span>
+<span class="s0">}</span>
+<span class="s0">}</span>
+</pre>
+</body>
+</html>

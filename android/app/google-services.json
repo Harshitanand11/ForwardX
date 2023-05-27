@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "352171575888",
+    "project_id": "forwardx-fc1e3",
+    "storage_bucket": "forwardx-fc1e3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352171575888:android:87e3cf784626584c07df55",
+        "android_client_info": {
+          "package_name": "com.example.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352171575888-imu8d86cklt3no3hb6q115f22d1v7q4n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQu8IALSdcltz-BS6PI36GUdPGJMW2UB0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352171575888-imu8d86cklt3no3hb6q115f22d1v7q4n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
