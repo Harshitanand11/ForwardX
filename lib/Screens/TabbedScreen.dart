@@ -265,34 +265,37 @@ class MachineDetailsScreen extends StatelessWidget {
 
 
 
-class LocationScreen extends StatelessWidget {
+class LocationScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Location List'),
-      // ),
-      body: LocationListScreen(),
-    );
-  }
+  _LocationScreenState createState() => _LocationScreenState();
 }
 
-class LocationListScreen extends StatefulWidget {
-  @override
-  _LocationListScreenState createState() => _LocationListScreenState();
-}
-
-class _LocationListScreenState extends State<LocationListScreen> {
+class _LocationScreenState extends State<LocationScreen> {
   CollectionReference locationsCollection =
   FirebaseFirestore.instance.collection('locations');
 
   List<Location> locations = [];
+  int currentPage = 1;
   bool isLoading = false;
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     loadLocations();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        loadMoreLocations();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> loadLocations() async {
@@ -304,7 +307,11 @@ class _LocationListScreenState extends State<LocationListScreen> {
     // Simulating API call or data retrieval
     await Future.delayed(Duration(seconds: 2));
 
-    QuerySnapshot querySnapshot = await locationsCollection.get();
+    QuerySnapshot querySnapshot = await locationsCollection
+        .orderBy('locationName')
+        .startAfter([currentPage * 26])
+        .limit(26)
+        .get();
 
     List<Location> newLocations = querySnapshot.docs.map((doc) {
       return Location(
@@ -321,33 +328,57 @@ class _LocationListScreenState extends State<LocationListScreen> {
     });
   }
 
+  Future<void> refreshLocations() async {
+    locations.clear();
+    currentPage = 1;
+    await loadLocations();
+  }
+
+  Future<void> loadMoreLocations() async {
+    currentPage++;
+    await loadLocations();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return isLoading
-        ? Center(child: CircularProgressIndicator())
-        : ListView.builder(
-      itemCount: locations.length,
-      itemBuilder: (context, index) {
-        Location location = locations[index];
-        return ListTile(
-          leading: Text(
-            location.locationName.substring(0, 1),
-            style: TextStyle(fontSize: 24),
-          ),
-          title: Text(location.locationName),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Machine Name: ${location.machineName}'),
-              Text('Status: ${location.status}'),
-              Text('Description: ${location.description}'),
-            ],
-          ),
-          onTap: () {
-            // Navigate to location details screen
+    return Scaffold(
+      // appBar: AppBar(
+      //   title: Text('Location List'),
+      // ),
+      body: RefreshIndicator(
+        onRefresh: refreshLocations,
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: locations.length + 1,
+          itemBuilder: (context, index) {
+            if (index == locations.length) {
+              if (isLoading) {
+                return Center(child: CircularProgressIndicator());
+              } else {
+                return SizedBox();
+              }
+            } else {
+              return ListTile(
+                leading: Text(
+                  locations[index].locationName.substring(0, 1),
+                  style: TextStyle(fontSize: 24),
+                ),
+                title: Text(locations[index].locationName),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LocationDetailsScreen(
+                        location: locations[index],
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
           },
-        );
-      },
+        ),
+      ),
     );
   }
 }
@@ -365,6 +396,42 @@ class Location {
       this.description,
       );
 }
+
+class LocationDetailsScreen extends StatelessWidget {
+  final Location location;
+
+  LocationDetailsScreen({required this.location});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Location Details'),
+      ),
+      body: ListView(
+        children: [
+          ListTile(
+            title: Text('Location Name'),
+            subtitle: Text(location.locationName),
+          ),
+          ListTile(
+            title: Text('Machine Name'),
+            subtitle: Text(location.machineName),
+          ),
+          ListTile(
+            title: Text('Status'),
+            subtitle: Text(location.status),
+          ),
+          ListTile(
+            title: Text('Description'),
+            subtitle: Text(location.description),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
 
 
@@ -448,16 +515,15 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
               style: TextStyle(fontSize: 24),
             ),
             title: Text(notification.partyName),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Notification Date: ${notification.notificationDate}'),
-                Text('Status: ${notification.status}'),
-                Text('Notification Text: ${notification.notificationText}'),
-              ],
-            ),
             onTap: () {
-              // Navigate to notification details screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NotificationDetailsScreen(
+                    notification: notification,
+                  ),
+                ),
+              );
             },
           );
         },
@@ -479,4 +545,36 @@ class NotificationItem {
       this.notificationText,
       );
 }
+
+class NotificationDetailsScreen extends StatelessWidget {
+  final NotificationItem notification;
+
+  NotificationDetailsScreen({required this.notification});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Notification Details'),
+      ),
+      body: DataTable(
+        columns: [
+          DataColumn(label: Text('Party Name')),
+          DataColumn(label: Text('Notification Date')),
+          DataColumn(label: Text('Status')),
+          DataColumn(label: Text('Notification Text')),
+        ],
+        rows: [
+          DataRow(cells: [
+            DataCell(Text(notification.partyName)),
+            DataCell(Text(notification.notificationDate)),
+            DataCell(Text(notification.status)),
+            DataCell(Text(notification.notificationText)),
+          ]),
+        ],
+      ),
+    );
+  }
+}
+
 
