@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Notification List'),
-      // ),
       body: NotificationListScreen(),
     );
   }
@@ -21,80 +19,89 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   CollectionReference notificationsCollection =
   FirebaseFirestore.instance.collection('notifications');
 
-  List<NotificationItem> notifications = [];
-  bool isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    loadNotifications();
-  }
-
-  Future<void> loadNotifications() async {
-    if (isLoading) return;
-    setState(() {
-      isLoading = true;
-    });
-
+  Future<void> refreshNotifications() async {
     // Simulating API call or data retrieval
     await Future.delayed(Duration(seconds: 2));
-
-    QuerySnapshot querySnapshot = await notificationsCollection
-        .orderBy('notificationDate', descending: true)
-        .get();
-
-    List<NotificationItem> newNotifications = querySnapshot.docs.map((doc) {
-      return NotificationItem(
-        doc['partyName'],
-        doc['notificationDate'],
-        doc['status'],
-        doc['notificationText'],
-      );
-    }).toList();
-
-    setState(() {
-      notifications.addAll(newNotifications);
-      isLoading = false;
-    });
-  }
-
-  Future<void> refreshNotifications() async {
-    notifications.clear();
-    await loadNotifications();
   }
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: refreshNotifications,
-      child: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          NotificationItem notification = notifications[index];
-          return ListTile(
-            leading: Text(
-              notification.partyName.substring(0, 1),
-              style: TextStyle(fontSize: 24),
-            ),
-            title: Text(notification.partyName),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Notification Date: ${notification.notificationDate}'),
-                Text('Status: ${notification.status}'),
-                Text('Notification Text: ${notification.notificationText}'),
-              ],
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NotificationDetailsScreen(
-                    notification: notification,
-                  ),
+      child: StreamBuilder<QuerySnapshot>(
+        stream: notificationsCollection.snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error fetching notifications'));
+          }
+
+          List<NotificationItem> notifications =
+          snapshot.data!.docs.map((doc) {
+            return NotificationItem(
+              doc['partyName'],
+              doc['notificationDate'],
+              doc['status'],
+              doc['notificationText'],
+              doc.reference.id,
+            );
+          }).toList();
+
+          return ListView.builder(
+            itemCount: notifications.length,
+            itemBuilder: (context, index) {
+              NotificationItem notification = notifications[index];
+              return ListTile(
+                title: Text(notification.partyName),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Text('Status'),
+                              SizedBox(height: 4),
+                              Text(notification.notificationDate),
+
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Text('Notification Date'),
+                              SizedBox(height: 4),
+                              Text(notification.status),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    // Text('Notification Text'),
+                    SizedBox(height: 4),
+                    Text(notification.notificationText),
+                  ],
                 ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationDetailsScreen(
+                        notification: notification,
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );
@@ -104,17 +111,20 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   }
 }
 
+
 class NotificationItem {
   final String partyName;
   final String notificationDate;
   final String status;
   final String notificationText;
+  final String documentId;
 
   NotificationItem(
       this.partyName,
       this.notificationDate,
       this.status,
       this.notificationText,
+      this.documentId,
       );
 }
 
@@ -123,32 +133,67 @@ class NotificationDetailsScreen extends StatelessWidget {
 
   NotificationDetailsScreen({required this.notification});
 
+  Future<void> updateNotificationStatus() async {
+    // Update the status field in Firestore
+    await FirebaseFirestore.instance
+        .collection('notifications')
+        .doc(notification.documentId)
+        .update({'status': 'completed'});
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool isCompleted = notification.status == 'completed';
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Notification Details'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.check),
+            onPressed: isCompleted ? null : () => updateNotificationStatus(),
+          ),
+        ],
       ),
       body: ListView(
+        padding: EdgeInsets.all(16),
         children: [
-          ListTile(
-            title: Text('Party Name'),
-            subtitle: Text(notification.partyName),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Text('Party Name'),
+                    SizedBox(height: 8),
+                    Text(notification.partyName),
+                  ],
+                ),
+              ),
+              SizedBox(width: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Text('Status'),
+                  SizedBox(height: 8),
+                  Text(notification.status),
+                ],
+              ),
+            ],
           ),
-          ListTile(
-            title: Text('Notification Date'),
-            subtitle: Text(notification.notificationDate),
-          ),
-          ListTile(
-            title: Text('Status'),
-            subtitle: Text(notification.status),
-          ),
-          ListTile(
-            title: Text('Notification Text'),
-            subtitle: Text(notification.notificationText),
-          ),
+          SizedBox(height: 16),
+          // Text('Notification Date'),
+          // SizedBox(height: 8),
+          Text(notification.notificationDate),
+          SizedBox(height: 16),
+          // Text('Notification Text'),
+          SizedBox(height: 8),
+           Text(notification.notificationText),
         ],
       ),
     );
   }
 }
+
+

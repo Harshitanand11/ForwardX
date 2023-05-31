@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 class LocationScreen extends StatefulWidget {
   @override
   _LocationScreenState createState() => _LocationScreenState();
@@ -50,6 +51,7 @@ class _LocationScreenState extends State<LocationScreen> {
 
     List<Location> newLocations = querySnapshot.docs.map((doc) {
       return Location(
+        doc.id, // Document ID
         doc['locationName'],
         doc['machineName'],
         doc['status'],
@@ -77,9 +79,6 @@ class _LocationScreenState extends State<LocationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Location List'),
-      // ),
       body: RefreshIndicator(
         onRefresh: refreshLocations,
         child: ListView.builder(
@@ -94,17 +93,27 @@ class _LocationScreenState extends State<LocationScreen> {
               }
             } else {
               return ListTile(
-                leading: Text(
-                  locations[index].locationName.substring(0, 1),
-                  style: TextStyle(fontSize: 24),
-                ),
-                title: Text(locations[index].locationName),
-                subtitle: Column(
+                title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Machine Name: ${locations[index].machineName}'),
-                    Text('Status: ${locations[index].status}'),
-                    Text('Description: ${locations[index].description}'),
+                    Text(
+                      locations[index].locationName,
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            locations[index].machineName,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Text(locations[index].status),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Text(locations[index].description),
                   ],
                 ),
                 onTap: () {
@@ -124,22 +133,37 @@ class _LocationScreenState extends State<LocationScreen> {
       ),
     );
   }
+
 }
 
 class Location {
+  final String documentId;
   final String locationName;
   final String machineName;
   final String status;
   final String description;
+  bool isActive;
 
   Location(
+      this.documentId,
       this.locationName,
       this.machineName,
       this.status,
       this.description,
-      );
-}
+      ): isActive = status == 'active';
 
+
+  Future<void> toggleStatus() async {
+    // Update the status field in Firestore
+    await FirebaseFirestore.instance
+        .collection('locations')
+        .doc(documentId) // Assuming you have a field to store the document ID in the Location class
+        .update({'status': isActive ? 'inactive' : 'active'});
+
+    // Toggle the isActive property locally
+    isActive = !isActive;
+  }
+}
 class LocationDetailsScreen extends StatelessWidget {
   final Location location;
 
@@ -150,24 +174,54 @@ class LocationDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Location Details'),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              try {
+                await location.toggleStatus();
+                final snackBar = SnackBar(
+                  content: Text(location.isActive
+                      ? 'Location activated'
+                      : 'Location deactivated'),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              } catch (e) {
+                // Handle error
+                print('Error toggling location status: $e');
+              }
+            },
+            icon: Icon(location.isActive ? Icons.check : Icons.close),
+          ),
+        ],
       ),
       body: ListView(
         children: [
-          DataTable(
-            columns: [
-              DataColumn(label: Text('Location Name')),
-              DataColumn(label: Text('Machine Name')),
-              DataColumn(label: Text('Status')),
-              DataColumn(label: Text('Description')),
-            ],
-            rows: [
-              DataRow(cells: [
-                DataCell(Text(location.locationName)),
-                DataCell(Text(location.machineName)),
-                DataCell(Text(location.status)),
-                DataCell(Text(location.description)),
-              ]),
-            ],
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  location.locationName,
+                  style: TextStyle(fontSize: 20),
+                ),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        location.machineName,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Spacer(),
+                    Text(location.status),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Text(location.description),
+              ],
+            ),
           ),
         ],
       ),

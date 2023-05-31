@@ -76,9 +76,6 @@ class _MachineListScreenState extends State<MachineListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Machine List'),
-      // ),
       body: RefreshIndicator(
         onRefresh: refreshMachines,
         child: ListView.builder(
@@ -93,11 +90,18 @@ class _MachineListScreenState extends State<MachineListScreen> {
               }
             } else {
               return ListTile(
-                leading: Text(
-                  machines[index].machineName.substring(0, 1),
-                  style: TextStyle(fontSize: 24),
+                title: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        machines[index].machineName,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Text(machines[index].status),
+                  ],
                 ),
-                title: Text(machines[index].machineName),
+                subtitle: Text(machines[index].description),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -115,6 +119,7 @@ class _MachineListScreenState extends State<MachineListScreen> {
       ),
     );
   }
+
 }
 
 
@@ -140,18 +145,39 @@ class MachineDetailsScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          DataTable(
-            columns: [
-              DataColumn(label: Text('Machine Name')),
-              DataColumn(label: Text('Status')),
-              DataColumn(label: Text('Description')),
-            ],
-            rows: [
-              DataRow(cells: [
-                DataCell(Text(machine.machineName)),
-                DataCell(Text(machine.status)),
-                DataCell(Text(machine.description)),
-              ]),
+          Table(
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            columnWidths: const <int, TableColumnWidth>{
+              0: FlexColumnWidth(1), // Adjust column width as needed
+            },
+            children: [
+              TableRow(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      machine.machineName,
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      machine.status,
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+              TableRow(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(machine.description),
+                  ),
+                  SizedBox.shrink(), // Empty cell for spacing
+                ],
+              ),
             ],
           ),
         ],
@@ -159,4 +185,7 @@ class MachineDetailsScreen extends StatelessWidget {
     );
   }
 }
+
+
+
 
