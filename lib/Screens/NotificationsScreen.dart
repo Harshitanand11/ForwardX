@@ -55,13 +55,25 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
             itemBuilder: (context, index) {
               NotificationItem notification = notifications[index];
               return ListTile(
-                title: Text(notification.partyName),
-                subtitle: Column(
+
+                title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Text('Status'),
+                              SizedBox(height: 4),
+                              Text(notification.partyName),
+
+                            ],
+                          ),
+                        ),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,7 +179,8 @@ class NotificationDetailsScreen extends StatelessWidget {
                   children: [
                     // Text('Party Name'),
                     SizedBox(height: 8),
-                    Text(notification.partyName),
+                    Text(notification.partyName
+                    ),
                   ],
                 ),
               ),

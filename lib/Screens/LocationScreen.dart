@@ -133,37 +133,40 @@ class _LocationScreenState extends State<LocationScreen> {
       ),
     );
   }
-
 }
 
 class Location {
   final String documentId;
   final String locationName;
   final String machineName;
-  final String status;
+  String status;
   final String description;
-  bool isActive;
 
-  Location(
-      this.documentId,
-      this.locationName,
-      this.machineName,
-      this.status,
-      this.description,
-      ): isActive = status == 'active';
+  Location(this.documentId, this.locationName, this.machineName, this.status,
+      this.description);
 
+  bool get isActive => status == 'active';
 
   Future<void> toggleStatus() async {
-    // Update the status field in Firestore
-    await FirebaseFirestore.instance
-        .collection('locations')
-        .doc(documentId) // Assuming you have a field to store the document ID in the Location class
-        .update({'status': isActive ? 'inactive' : 'active'});
+    // Get the current status
+    String newStatus = isActive ? 'inactive' : 'active';
 
-    // Toggle the isActive property locally
-    isActive = !isActive;
+    try {
+      // Update the status field in Firestore
+      await FirebaseFirestore.instance
+          .collection('locations')
+          .doc(documentId)
+          .update({'status': newStatus});
+
+      // Update the status locally
+      status = newStatus;
+    } catch (e) {
+      // Handle error
+      print('Error toggling location status: $e');
+    }
   }
 }
+
 class LocationDetailsScreen extends StatelessWidget {
   final Location location;
 
@@ -228,4 +231,3 @@ class LocationDetailsScreen extends StatelessWidget {
     );
   }
 }
-

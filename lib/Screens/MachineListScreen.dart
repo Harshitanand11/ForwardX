@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MachineListScreen extends StatefulWidget {
   @override
@@ -76,6 +74,30 @@ class _MachineListScreenState extends State<MachineListScreen> {
     await loadMachines();
   }
 
+  Future<void> updateMachineStatus(int index, String machineName, String status) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('machines')
+          .where('machineName', isEqualTo: machineName)
+          .limit(1)
+          .get();
+      if (querySnapshot.size > 0) {
+        DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+        DocumentReference machineRef = FirebaseFirestore.instance
+            .collection('machines')
+            .doc(documentSnapshot.id);
+        await machineRef.update({'status': status});
+        setState(() {
+          machines[index].status = status;
+        });
+      } else {
+        print('Machine not found.');
+      }
+    } catch (e) {
+      print('Failed to update machine status: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,9 +105,13 @@ class _MachineListScreenState extends State<MachineListScreen> {
         onRefresh: refreshMachines,
         child: ListView.builder(
           controller: _scrollController,
-          itemCount: machines.length + 1,
+          itemCount: machines.isEmpty ? 1 : machines.length + 1,
           itemBuilder: (context, index) {
-            if (index == machines.length) {
+            if (machines.isEmpty) {
+              return ListTile(
+                title: Text('No machines found'),
+              );
+            } else if (index == machines.length) {
               if (isLoading) {
                 return Center(child: CircularProgressIndicator());
               } else {
@@ -117,9 +143,8 @@ class _MachineListScreenState extends State<MachineListScreen> {
                   if (direction == DismissDirection.startToEnd) {
                     // Toggle machine status to inactive if not already inactive
                     if (machines[index].status != 'Inactive') {
-                      machinesCollection
-                          .doc(machines[index].machineName)
-                          .update({'status': 'Inactive'});
+                      updateMachineStatus(
+                          index, machines[index].machineName, 'Inactive');
                       setState(() {
                         machines[index].status = 'Inactive';
                       });
@@ -127,9 +152,8 @@ class _MachineListScreenState extends State<MachineListScreen> {
                   } else if (direction == DismissDirection.endToStart) {
                     // Toggle machine status to active if not already active
                     if (machines[index].status != 'Active') {
-                      machinesCollection
-                          .doc(machines[index].machineName)
-                          .update({'status': 'Active'});
+                      updateMachineStatus(
+                          index, machines[index].machineName, 'Active');
                       setState(() {
                         machines[index].status = 'Active';
                       });
@@ -137,24 +161,16 @@ class _MachineListScreenState extends State<MachineListScreen> {
                   }
                   return Future.value(false);
                 },
-
-
-                // onDismissed: (direction) {
-                //   // if (direction == DismissDirection.endToStart) {
-                //   //   // Delete machine
-                //   //   machinesCollection
-                //   //       .doc(machines[index].machineName)
-                //   //       .delete();
-                //   //   setState(() {
-                //   //     machines.removeAt(index);
-                //   //   });
-                //     ScaffoldMessenger.of(context).showSnackBar(
-                //       SnackBar(
-                //         content: Text('Machine deleted.'),
-                //       ),
-                //     );
-                //   }
-                // },
+                onDismissed: (direction) {
+                  setState(() {
+                    machines.removeAt(index);
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Machine deleted.'),
+                    ),
+                  );
+                },
                 child: ListTile(
                   title: Row(
                     children: [
@@ -162,6 +178,7 @@ class _MachineListScreenState extends State<MachineListScreen> {
                         child: Text(
                           machines[index].machineName,
                           style: TextStyle(fontWeight: FontWeight.bold),
+
                         ),
                       ),
                       Text(machines[index].status),
@@ -249,6 +266,3 @@ class MachineDetailsScreen extends StatelessWidget {
     );
   }
 }
-
-
-
