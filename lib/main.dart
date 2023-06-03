@@ -5,9 +5,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:myapp/Machine_list.dart';
 import 'package:myapp/theme/theme_constants.dart';
 import 'package:myapp/theme/theme_manager.dart';
-import 'Screens/TabbedScreen.dart';
-import 'Screens/MachineListScreen.dart';
 import 'package:provider/provider.dart';
+import 'Screens/TabbedScreen.dart';
 
 void main() async {
 	WidgetsFlutterBinding.ensureInitialized();
@@ -94,14 +93,38 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-	@override
-	void dispose() {
-		super.dispose();
-	}
+	final GoogleSignIn _googleSignIn = GoogleSignIn();
+	final FirebaseAuth _auth = FirebaseAuth.instance;
 
 	@override
 	void initState() {
 		super.initState();
+	}
+
+	Future<void> _handleSignIn() async {
+		try {
+			final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+			final GoogleSignInAuthentication googleAuth =
+			await googleUser!.authentication;
+
+			final OAuthCredential credential = GoogleAuthProvider.credential(
+				accessToken: googleAuth.accessToken,
+				idToken: googleAuth.idToken,
+			);
+
+			final UserCredential userCredential =
+			await _auth.signInWithCredential(credential);
+
+			if (userCredential.user != null) {
+				Navigator.pushReplacement(
+					context,
+					MaterialPageRoute(builder: (context) => TabbedScreen()),
+				);
+			}
+		} catch (error) {
+			print('Google sign-in error: $error');
+			// Handle sign-in failure or display an error message
+		}
 	}
 
 	@override
@@ -145,9 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
 							),
 							SizedBox(height: 20),
 							ElevatedButton.icon(
-								onPressed: () {
-									GoogleSignIn().signIn();
-								},
+								onPressed: _handleSignIn,
 								icon: Image.asset(
 									'assets/page-1/images/icons8-google-48-3.png',
 									width: 24,
@@ -158,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
 							SizedBox(height: 20),
 							TextButton(
 								onPressed: () {
-									//  Navigate to Terms and Conditions screen
+
 								},
 								child: Text('Terms and Conditions'),
 							),
@@ -181,3 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
 		);
 	}
 }
+
+
+
+
