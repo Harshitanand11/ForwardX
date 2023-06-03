@@ -74,7 +74,8 @@ class _MachineListScreenState extends State<MachineListScreen> {
     await loadMachines();
   }
 
-  Future<void> updateMachineStatus(int index, String machineName, String status) async {
+  Future<void> updateMachineStatus(
+      int index, String machineName, String status) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('machines')
@@ -172,13 +173,15 @@ class _MachineListScreenState extends State<MachineListScreen> {
                   );
                 },
                 child: ListTile(
+                  leading: CircleAvatar(
+                    child: Text(machines[index].machineName[0]),
+                  ),
                   title: Row(
                     children: [
                       Expanded(
                         child: Text(
                           machines[index].machineName,
                           style: TextStyle(fontWeight: FontWeight.bold),
-
                         ),
                       ),
                       Text(machines[index].status),
@@ -265,4 +268,10 @@ class MachineDetailsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: MachineListScreen(),
+  ));
 }
