@@ -93,6 +93,9 @@ class _LocationScreenState extends State<LocationScreen> {
               }
             } else {
               return ListTile(
+                leading: CircleAvatar(
+                  child: Text(locations[index].locationName[0]),
+                ),
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

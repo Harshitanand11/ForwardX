@@ -55,22 +55,21 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
             itemBuilder: (context, index) {
               NotificationItem notification = notifications[index];
               return ListTile(
-
+                leading: CircleAvatar(
+                  child: Text(notification.partyName[0]),
+                ),
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Text('Status'),
                               SizedBox(height: 4),
                               Text(notification.partyName),
-
                             ],
                           ),
                         ),
@@ -78,10 +77,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Text('Status'),
                               SizedBox(height: 4),
                               Text(notification.notificationDate),
-
                             ],
                           ),
                         ),
@@ -90,7 +87,6 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Text('Notification Date'),
                               SizedBox(height: 4),
                               Text(notification.status),
                             ],
@@ -99,7 +95,6 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                       ],
                     ),
                     SizedBox(height: 8),
-                    // Text('Notification Text'),
                     SizedBox(height: 4),
                     Text(notification.notificationText),
                   ],
@@ -122,7 +117,6 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     );
   }
 }
-
 
 class NotificationItem {
   final String partyName;
@@ -177,10 +171,8 @@ class NotificationDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Text('Party Name'),
                     SizedBox(height: 8),
-                    Text(notification.partyName
-                    ),
+                    Text(notification.partyName),
                   ],
                 ),
               ),
@@ -188,7 +180,6 @@ class NotificationDetailsScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Text('Status'),
                   SizedBox(height: 8),
                   Text(notification.status),
                 ],
@@ -196,17 +187,29 @@ class NotificationDetailsScreen extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16),
-          // Text('Notification Date'),
-          // SizedBox(height: 8),
           Text(notification.notificationDate),
           SizedBox(height: 16),
-          // Text('Notification Text'),
           SizedBox(height: 8),
-           Text(notification.notificationText),
+          Text(notification.notificationText),
         ],
       ),
     );
   }
 }
 
+void main() {
+  runApp(MyApp());
+}
 
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Notification App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: NotificationsScreen(),
+    );
+  }
+}
