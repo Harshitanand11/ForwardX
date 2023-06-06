@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:myapp/Machine_list.dart';
 import 'package:myapp/theme/theme_constants.dart';
 import 'package:myapp/theme/theme_manager.dart';
 import 'package:provider/provider.dart';
@@ -71,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
 					mainAxisAlignment: MainAxisAlignment.center,
 					children: [
 						Image.asset(
-							'assets/page-1/images/fowardx-logo-1.png',
+							'assets/images/fowardx-logo-1.png',
 							width: 150,
 							height: 150,
 						),
@@ -148,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
 			body: Container(
 				decoration: BoxDecoration(
 					image: DecorationImage(
-						image: AssetImage('assets/page-1/images/welcome-1-bg.png'),
+						image: AssetImage('assets/images/welcome-1-bg.png'),
 						fit: BoxFit.cover,
 					),
 				),
@@ -157,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
 						mainAxisAlignment: MainAxisAlignment.center,
 						children: [
 							Image.asset(
-								'assets/page-1/images/fowardx-logo-1.png',
+								'assets/images/fowardx-logo-1.png',
 								width: 150,
 								height: 150,
 							),
@@ -170,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
 							ElevatedButton.icon(
 								onPressed: _handleSignIn,
 								icon: Image.asset(
-									'assets/page-1/images/icons8-google-48-3.png',
+									'assets/images/icons8-google-48-3.png',
 									width: 24,
 									height: 24,
 								),

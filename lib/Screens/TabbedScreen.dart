@@ -48,7 +48,7 @@ class DashboardScreen extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height / 3,
                 child: Image.asset(
-                  'assets/page-1/images/img.png',
+                  'assets/images/img.png',
                   fit: BoxFit.contain,
                 ),
               ),
@@ -62,7 +62,7 @@ class DashboardScreen extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(25),
                   child: Image.asset(
-                    'assets/page-1/images/img2.png',
+                    'assets/images/img2.png',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -77,7 +77,7 @@ class DashboardScreen extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(25),
                   child: Image.asset(
-                    'assets/page-1/images/img3.png',
+                    'assets/images/img3.png',
                     fit: BoxFit.cover,
                   ),
                 ),
