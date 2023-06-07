@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NotificationsScreen extends StatelessWidget {
   @override
@@ -39,8 +40,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
             return Center(child: Text('Error fetching notifications'));
           }
 
-          List<NotificationItem> notifications =
-          snapshot.data!.docs.map((doc) {
+          List<NotificationItem> notifications = snapshot.data!.docs
+              .map((doc) {
             return NotificationItem(
               doc['partyName'],
               doc['notificationDate'],
@@ -48,7 +49,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
               doc['notificationText'],
               doc.reference.id,
             );
-          }).toList();
+          })
+              .toList();
 
           return ListView.builder(
             itemCount: notifications.length,
@@ -103,8 +105,11 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => NotificationDetailsScreen(
-                        notification: notification,
+                      builder: (context) => BlocProvider<NotificationBloc>(
+                        create: (context) => NotificationBloc(),
+                        child: NotificationDetailsScreen(
+                          notification: notification,
+                        ),
                       ),
                     ),
                   );
@@ -125,13 +130,8 @@ class NotificationItem {
   final String notificationText;
   final String documentId;
 
-  NotificationItem(
-      this.partyName,
-      this.notificationDate,
-      this.status,
-      this.notificationText,
-      this.documentId,
-      );
+  NotificationItem(this.partyName, this.notificationDate, this.status,
+      this.notificationText, this.documentId);
 }
 
 class NotificationDetailsScreen extends StatelessWidget {
@@ -139,16 +139,20 @@ class NotificationDetailsScreen extends StatelessWidget {
 
   NotificationDetailsScreen({required this.notification});
 
-  Future<void> updateNotificationStatus() async {
+  Future<void> updateNotificationStatus(BuildContext context) async {
+    final notificationBloc = BlocProvider.of<NotificationBloc>(context);
     // Update the status field in Firestore
     await FirebaseFirestore.instance
         .collection('notifications')
         .doc(notification.documentId)
         .update({'status': 'completed'});
+    // Add the updated notification to the bloc
+    notificationBloc.add(UpdateNotification(notification));
   }
 
   @override
   Widget build(BuildContext context) {
+    final notificationBloc = BlocProvider.of<NotificationBloc>(context);
     bool isCompleted = notification.status == 'completed';
 
     return Scaffold(
@@ -157,7 +161,9 @@ class NotificationDetailsScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.check),
-            onPressed: isCompleted ? null : () => updateNotificationStatus(),
+            onPressed: isCompleted
+                ? null
+                : () => updateNotificationStatus(context),
           ),
         ],
       ),
@@ -195,6 +201,36 @@ class NotificationDetailsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class NotificationBloc extends Bloc<NotificationEvent, List<NotificationItem>> {
+  NotificationBloc() : super([]);
+
+  @override
+  Stream<List<NotificationItem>> mapEventToState(NotificationEvent event) async* {
+    if (event is UpdateNotification) {
+      yield* _mapUpdateNotificationToState(event);
+    }
+  }
+
+  Stream<List<NotificationItem>> _mapUpdateNotificationToState(
+      UpdateNotification event) async* {
+    List<NotificationItem> updatedNotifications = List.from(state);
+    int index = updatedNotifications.indexWhere(
+            (notification) => notification.documentId == event.notification.documentId);
+    if (index != -1) {
+      updatedNotifications[index] = event.notification;
+      yield updatedNotifications;
+    }
+  }
+}
+
+abstract class NotificationEvent {}
+
+class UpdateNotification extends NotificationEvent {
+  final NotificationItem notification;
+
+  UpdateNotification(this.notification);
 }
 
 void main() {
