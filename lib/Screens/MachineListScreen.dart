@@ -1,96 +1,137 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class MachineListScreen extends StatefulWidget {
-  @override
-  _MachineListScreenState createState() => _MachineListScreenState();
+
+abstract class MachinesEvent {}
+
+class LoadMachines extends MachinesEvent {}
+
+class RefreshMachines extends MachinesEvent {}
+
+class LoadMoreMachines extends MachinesEvent {}
+
+class UpdateMachineStatus extends MachinesEvent {
+  final int index;
+  final String machineName;
+  final String status;
+
+  UpdateMachineStatus(this.index, this.machineName, this.status);
 }
 
-class _MachineListScreenState extends State<MachineListScreen> {
+class DeleteMachine extends MachinesEvent {
+  final int index;
+
+  DeleteMachine(this.index);
+}
+
+
+abstract class MachinesState {}
+
+class MachinesLoading extends MachinesState {}
+
+class MachinesLoaded extends MachinesState {
+  final List<Machine> machines;
+
+  MachinesLoaded(this.machines);
+}
+
+class MachinesError extends MachinesState {}
+
+
+class MachinesBloc extends Bloc<MachinesEvent, MachinesState> {
   CollectionReference machinesCollection =
   FirebaseFirestore.instance.collection('machines');
 
-  List<Machine> machines = [];
-  int currentPage = 1;
-  bool isLoading = false;
-  ScrollController _scrollController = ScrollController();
+  MachinesBloc() : super(MachinesLoading());
 
   @override
-  void initState() {
-    super.initState();
-    loadMachines();
-
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        loadMoreMachines();
-      }
-    });
+  Stream<MachinesState> mapEventToState(MachinesEvent event) async* {
+    if (event is LoadMachines) {
+      yield* _loadMachines();
+    } else if (event is RefreshMachines) {
+      yield* _refreshMachines();
+    } else if (event is LoadMoreMachines) {
+      yield* _loadMoreMachines();
+    } else if (event is UpdateMachineStatus) {
+      yield* _updateMachineStatus(event);
+    } else if (event is DeleteMachine) {
+      yield* _deleteMachine(event);
+    }
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
+  Stream<MachinesState> _loadMachines() async* {
+    try {
+      QuerySnapshot querySnapshot = await machinesCollection
+          .orderBy('machineName')
+          .limit(26)
+          .get();
+
+      List<Machine> machines = querySnapshot.docs.map((doc) {
+        return Machine(
+          doc['machineName'] ?? '',
+          doc['status'] ?? '',
+          doc['description'] ?? '',
+        );
+      }).toList();
+
+      yield MachinesLoaded(machines);
+    } catch (e) {
+      yield MachinesError();
+    }
   }
 
-  Future<void> loadMachines() async {
-    if (isLoading) return;
-    setState(() {
-      isLoading = true;
-    });
-
-    // Simulating API call or data retrieval
-    await Future.delayed(Duration(seconds: 2));
-
-    QuerySnapshot querySnapshot = await machinesCollection
-        .orderBy('machineName')
-        .startAfter([currentPage * 26])
-        .limit(26)
-        .get();
-
-    List<Machine> newMachines = querySnapshot.docs.map((doc) {
-      return Machine(
-        doc['machineName'] ?? '',
-        doc['status'] ?? '',
-        doc['description'] ?? '',
-      );
-    }).toList();
-
-    setState(() {
-      machines.addAll(newMachines);
-      isLoading = false;
-    });
+  Stream<MachinesState> _refreshMachines() async* {
+    yield MachinesLoading();
+    yield* _loadMachines();
   }
 
-  Future<void> refreshMachines() async {
-    machines.clear();
-    currentPage = 1;
-    await loadMachines();
+  Stream<MachinesState> _loadMoreMachines() async* {
+    MachinesLoaded currentState = state as MachinesLoaded;
+    int currentCount = currentState.machines.length;
+
+    try {
+      QuerySnapshot querySnapshot = await machinesCollection
+          .orderBy('machineName')
+          .startAfter([currentState.machines[currentCount - 1].machineName])
+          .limit(26)
+          .get();
+
+      List<Machine> newMachines = querySnapshot.docs.map((doc) {
+        return Machine(
+          doc['machineName'] ?? '',
+          doc['status'] ?? '',
+          doc['description'] ?? '',
+        );
+      }).toList();
+
+      currentState.machines.addAll(newMachines);
+      yield MachinesLoaded(currentState.machines);
+    } catch (e) {
+      yield MachinesError();
+    }
   }
 
-  Future<void> loadMoreMachines() async {
-    currentPage++;
-    await loadMachines();
-  }
+  Stream<MachinesState> _updateMachineStatus(UpdateMachineStatus event) async* {
+    MachinesLoaded currentState = state as MachinesLoaded;
 
-  Future<void> updateMachineStatus(
-      int index, String machineName, String status) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('machines')
-          .where('machineName', isEqualTo: machineName)
+          .where('machineName', isEqualTo: event.machineName)
           .limit(1)
           .get();
+
       if (querySnapshot.size > 0) {
         DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
         DocumentReference machineRef = FirebaseFirestore.instance
             .collection('machines')
             .doc(documentSnapshot.id);
-        await machineRef.update({'status': status});
-        setState(() {
-          machines[index].status = status;
-        });
+
+        await machineRef.update({'status': event.status});
+
+        currentState.machines[event.index].status = event.status;
+        yield MachinesLoaded(currentState.machines);
       } else {
         print('Machine not found.');
       }
@@ -99,108 +140,137 @@ class _MachineListScreenState extends State<MachineListScreen> {
     }
   }
 
+  Stream<MachinesState> _deleteMachine(DeleteMachine event) async* {
+    MachinesLoaded currentState = state as MachinesLoaded;
+
+    try {
+      DocumentSnapshot documentSnapshot = await machinesCollection
+          .where('machineName',
+          isEqualTo: currentState.machines[event.index].machineName)
+          .limit(1)
+          .get()
+          .then((snapshot) => snapshot.docs.first);
+
+      if (documentSnapshot.exists) {
+        await documentSnapshot.reference.delete();
+
+        currentState.machines.removeAt(event.index);
+        yield MachinesLoaded(currentState.machines);
+      } else {
+        print('Machine not found.');
+      }
+    } catch (e) {
+      print('Failed to delete machine: $e');
+    }
+  }
+}
+
+class MachineListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: refreshMachines,
-        child: ListView.builder(
-          controller: _scrollController,
-          itemCount: machines.isEmpty ? 1 : machines.length + 1,
-          itemBuilder: (context, index) {
-            if (machines.isEmpty) {
-              return ListTile(
-                title: Text('No machines found'),
+      // appBar: AppBar(
+      //   title: Text('Machine List'),
+      // ),
+      body: BlocProvider(
+        create: (context) => MachinesBloc()..add(LoadMachines()),
+        child: BlocBuilder<MachinesBloc, MachinesState>(
+          builder: (context, state) {
+            if (state is MachinesLoading) {
+              return Center(
+                child: CircularProgressIndicator(),
               );
-            } else if (index == machines.length) {
-              if (isLoading) {
-                return Center(child: CircularProgressIndicator());
-              } else {
-                return SizedBox();
-              }
-            } else {
-              return Dismissible(
-                key: Key(machines[index].machineName),
-                direction: DismissDirection.horizontal,
-                background: Container(
-                  alignment: Alignment.centerRight,
-                  color: Colors.red,
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  ),
-                ),
-                secondaryBackground: Container(
-                  alignment: Alignment.centerLeft,
-                  color: Colors.green,
-                  child: Icon(
-                    machines[index].status == 'Active'
-                        ? Icons.toggle_off
-                        : Icons.toggle_on,
-                    color: Colors.white,
-                  ),
-                ),
-                confirmDismiss: (direction) {
-                  if (direction == DismissDirection.startToEnd) {
-                    // Toggle machine status to inactive if not already inactive
-                    if (machines[index].status != 'Inactive') {
-                      updateMachineStatus(
-                          index, machines[index].machineName, 'Inactive');
-                      setState(() {
-                        machines[index].status = 'Inactive';
-                      });
-                    }
-                  } else if (direction == DismissDirection.endToStart) {
-                    // Toggle machine status to active if not already active
-                    if (machines[index].status != 'Active') {
-                      updateMachineStatus(
-                          index, machines[index].machineName, 'Active');
-                      setState(() {
-                        machines[index].status = 'Active';
-                      });
-                    }
-                  }
-                  return Future.value(false);
+            } else if (state is MachinesLoaded) {
+              return RefreshIndicator(
+                onRefresh: () async {
+                  BlocProvider.of<MachinesBloc>(context).add(RefreshMachines());
                 },
-                onDismissed: (direction) {
-                  setState(() {
-                    machines.removeAt(index);
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Machine deleted.'),
-                    ),
-                  );
-                },
-                child: ListTile(
-                  leading: CircleAvatar(
-                    child: Text(machines[index].machineName[0]),
-                  ),
-                  title: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          machines[index].machineName,
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                child: ListView.builder(
+                  itemCount: state.machines.length,
+                  itemBuilder: (context, index) {
+                    return Dismissible(
+                      key: Key(state.machines[index].machineName),
+                      direction: DismissDirection.horizontal,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        color: Colors.red,
+                        child: Icon(
+                          Icons.delete,
+                          color: Colors.white,
                         ),
                       ),
-                      Text(machines[index].status),
-                    ],
-                  ),
-                  subtitle: Text(machines[index].description),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MachineDetailsScreen(
-                          machine: machines[index],
+                      secondaryBackground: Container(
+                        alignment: Alignment.centerLeft,
+                        color: Colors.green,
+                        child: Icon(
+                          state.machines[index].status == 'Active'
+                              ? Icons.toggle_off
+                              : Icons.toggle_on,
+                          color: Colors.white,
                         ),
+                      ),
+                      confirmDismiss: (direction) async {
+                        if (direction == DismissDirection.startToEnd) {
+                          // Toggle machine status to inactive if not already inactive
+                          if (state.machines[index].status != 'Inactive') {
+                            BlocProvider.of<MachinesBloc>(context).add(
+                              UpdateMachineStatus(
+                                index,
+                                state.machines[index].machineName,
+                                'Inactive',
+                              ),
+                            );
+                          }
+                        } else if (direction == DismissDirection.endToStart) {
+                          // Toggle machine status to active if not already active
+                          if (state.machines[index].status != 'Active') {
+                            BlocProvider.of<MachinesBloc>(context).add(
+                              UpdateMachineStatus(
+                                index,
+                                state.machines[index].machineName,
+                                'Active',
+                              ),
+                            );
+                          }
+                        }
+                        return false;
+                      },
+                      onDismissed: (direction) {
+                        BlocProvider.of<MachinesBloc>(context)
+                            .add(DeleteMachine(index));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Machine deleted.'),
+                          ),
+                        );
+                      },
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          child: Text(state.machines[index].machineName[0]),
+                        ),
+                        title: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                state.machines[index].machineName,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Text(state.machines[index].status),
+                          ],
+                        ),
+                        subtitle: Text(state.machines[index].description),
                       ),
                     );
                   },
                 ),
               );
+            } else if (state is MachinesError) {
+              return Center(
+                child: Text('Error loading machines.'),
+              );
             }
+            return SizedBox();
           },
         ),
       ),
@@ -214,60 +284,6 @@ class Machine {
   String description;
 
   Machine(this.machineName, this.status, this.description);
-}
-
-class MachineDetailsScreen extends StatelessWidget {
-  final Machine machine;
-
-  MachineDetailsScreen({required this.machine});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Machine Details'),
-      ),
-      body: ListView(
-        children: [
-          Table(
-            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            columnWidths: const <int, TableColumnWidth>{
-              0: FlexColumnWidth(1), // Adjust column width as needed
-            },
-            children: [
-              TableRow(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      machine.machineName,
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      machine.status,
-                      textAlign: TextAlign.right,
-                    ),
-                  ),
-                ],
-              ),
-              TableRow(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(machine.description),
-                  ),
-                  SizedBox.shrink(), // Empty cell for spacing
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 void main() {
