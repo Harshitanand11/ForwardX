@@ -4,7 +4,7 @@ import 'NotificationsScreen.dart';
 import 'LocationScreen.dart';
 import 'MachineListScreen.dart';
 import 'SettingsButton.dart';
-// import 'package:image_picker/image_picker.dart';
+import 'image_picker_dialog.dart';
  import 'package:file_picker/file_picker.dart';
  import 'file_picker_dialog.dart';
 
@@ -70,7 +70,12 @@ class TabbedScreen extends StatelessWidget {
               TextButton(
                 child: Text('Select Image'),
                 onPressed: () {
-                  // selectImage(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ImagePickerScreen(),
+                    ),
+                  );
                 },
               ),
               TextButton(
