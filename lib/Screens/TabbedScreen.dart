@@ -5,7 +5,8 @@ import 'LocationScreen.dart';
 import 'MachineListScreen.dart';
 import 'SettingsButton.dart';
 // import 'package:image_picker/image_picker.dart';
-// import 'package:file_picker/file_picker.dart';
+ import 'package:file_picker/file_picker.dart';
+ import 'file_picker_dialog.dart';
 
 class TabbedScreen extends StatelessWidget {
   @override
@@ -75,7 +76,12 @@ class TabbedScreen extends StatelessWidget {
               TextButton(
                 child: Text("Select Document"),
                 onPressed: () {
-                  // selectDocument(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FilePickerScreen(),
+                    ),
+                  );
                 },
               ),
             ],
@@ -106,17 +112,17 @@ class TabbedScreen extends StatelessWidget {
   //   Navigator.of(context).pop(); // Close the dialog after image selection
   // }
 
-  // void selectDocument(BuildContext context) async {
-  //   final result = await FilePicker.platform.pickFiles();
-  //
-  //   if (result != null) {
-  //
-  //   } else {
-  //
-  //   }
-  //
-  //   Navigator.of(context).pop(); // Close the dialog after document selection
-  // }
+  void selectDocument(BuildContext context) async {
+    final result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+
+    } else {
+
+    }
+
+    Navigator.of(context).pop(); // Close the dialog after document selection
+  }
 
   void logoutUser(BuildContext context) {
 
