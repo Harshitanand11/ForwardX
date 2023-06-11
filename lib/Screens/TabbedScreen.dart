@@ -7,6 +7,7 @@ import 'SettingsButton.dart';
 import 'image_picker_dialog.dart';
  import 'package:file_picker/file_picker.dart';
  import 'file_picker_dialog.dart';
+ import 'DownloadFilesScreen.dart';
 
 class TabbedScreen extends StatelessWidget {
   @override
@@ -89,6 +90,17 @@ class TabbedScreen extends StatelessWidget {
                   );
                 },
               ),
+              TextButton(
+                child: Text("Download Files "),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DownloadFilesScreen()),
+                  );
+                },
+
+              ),
+
             ],
           ),
           actions: [
