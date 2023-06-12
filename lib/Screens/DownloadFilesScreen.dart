@@ -5,7 +5,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 
-
 abstract class DownloadFilesEvent {}
 
 class FetchDownloadURLsEvent extends DownloadFilesEvent {}
@@ -62,9 +61,7 @@ class DownloadFilesBloc extends Bloc<DownloadFilesEvent, DownloadFilesState> {
     }
   }
 
-
-  Stream<DownloadFilesState> _mapDownloadFileEventToState(
-      String downloadURL) async* {
+  Stream<DownloadFilesState> _mapDownloadFileEventToState(String downloadURL) async* {
     yield DownloadInProgressState();
 
     try {
@@ -89,7 +86,6 @@ class DownloadFilesBloc extends Bloc<DownloadFilesEvent, DownloadFilesState> {
   }
 }
 
-
 class DownloadFilesScreen extends StatefulWidget {
   @override
   _DownloadFilesScreenState createState() => _DownloadFilesScreenState();
@@ -97,6 +93,7 @@ class DownloadFilesScreen extends StatefulWidget {
 
 class _DownloadFilesScreenState extends State<DownloadFilesScreen> {
   late DownloadFilesBloc _downloadFilesBloc;
+  bool _isListView = true; // Flag to track the current view mode
 
   @override
   void initState() {
@@ -116,6 +113,16 @@ class _DownloadFilesScreenState extends State<DownloadFilesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Download Files'),
+        actions: [
+          IconButton(
+            icon: Icon(_isListView ? Icons.grid_view : Icons.list),
+            onPressed: () {
+              setState(() {
+                _isListView = !_isListView;
+              });
+            },
+          ),
+        ],
       ),
       body: BlocBuilder<DownloadFilesBloc, DownloadFilesState>(
         bloc: _downloadFilesBloc,
@@ -125,7 +132,11 @@ class _DownloadFilesScreenState extends State<DownloadFilesScreen> {
               child: CircularProgressIndicator(),
             );
           } else if (state is DownloadURLsLoadedState) {
-            return buildDownloadURLsLoadedView(state.downloadURLs);
+            if (_isListView) {
+              return buildDownloadURLsLoadedListView(state.downloadURLs);
+            } else {
+              return buildDownloadURLsLoadedGridView(state.downloadURLs);
+            }
           } else if (state is DownloadCompletedState) {
             return buildDownloadCompletedView();
           } else if (state is DownloadFailedState) {
@@ -138,7 +149,7 @@ class _DownloadFilesScreenState extends State<DownloadFilesScreen> {
     );
   }
 
-  Widget buildDownloadURLsLoadedView(List<String> downloadURLs) {
+  Widget buildDownloadURLsLoadedListView(List<String> downloadURLs) {
     return ListView.builder(
       itemCount: downloadURLs.length,
       itemBuilder: (context, index) {
@@ -154,6 +165,81 @@ class _DownloadFilesScreenState extends State<DownloadFilesScreen> {
       },
     );
   }
+
+  Widget buildDownloadURLsLoadedGridView(List<String> downloadURLs) {
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+      ),
+      itemCount: downloadURLs.length,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          onTap: () {
+            _downloadFilesBloc.add(DownloadFileEvent(downloadURLs[index]));
+          },
+          child: Container(
+            color: Colors.grey[200],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  downloadURLs[index],
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(height: 8),
+                FutureBuilder<FileStat>(
+                  future: File(downloadURLs[index]).stat(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+                    if (snapshot.hasData) {
+                      final fileSize = _formatBytes(snapshot.data!.size);
+                      final modifiedTime = snapshot.data!.modified;
+
+                      return Column(
+                        children: [
+                          Text(
+                            'File Size: $fileSize',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Modified: ${modifiedTime.toString()}',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ],
+                      );
+                    }
+                    return Container();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String _formatBytes(int bytes) {
+    if (bytes <= 0) return '0 B';
+    const suffixes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    var i = 0;
+    double value = bytes.toDouble();
+    while (value >= 1024 && i < suffixes.length - 1) {
+      value /= 1024;
+      i++;
+    }
+    final formattedValue = value.toStringAsFixed(2);
+    return '$formattedValue ${suffixes[i]}';
+  }
+
 
   Widget buildDownloadCompletedView() {
     return Center(
