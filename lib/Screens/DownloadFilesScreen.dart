@@ -4,6 +4,8 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+import 'package:intl/intl.dart';
+
 
 abstract class DownloadFilesEvent {}
 
@@ -61,7 +63,8 @@ class DownloadFilesBloc extends Bloc<DownloadFilesEvent, DownloadFilesState> {
     }
   }
 
-  Stream<DownloadFilesState> _mapDownloadFileEventToState(String downloadURL) async* {
+  Stream<DownloadFilesState> _mapDownloadFileEventToState(
+      String downloadURL) async* {
     yield DownloadInProgressState();
 
     try {
@@ -175,42 +178,47 @@ class _DownloadFilesScreenState extends State<DownloadFilesScreen> {
       ),
       itemCount: downloadURLs.length,
       itemBuilder: (context, index) {
+        final String url = downloadURLs[index];
+        final bool isImage = _isImageFile(url);
+        final bool isDoc = url.endsWith('.doc');
+        final String fileType = isImage ? 'Image' : (isDoc ? 'Document' : 'Unknown');
+        final IconData iconData = isImage ? Icons.image : (isDoc ? Icons.description : Icons.help_outline);
+
         return GestureDetector(
           onTap: () {
-            _downloadFilesBloc.add(DownloadFileEvent(downloadURLs[index]));
+            _downloadFilesBloc.add(DownloadFileEvent(url));
           },
           child: Container(
             color: Colors.grey[200],
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  downloadURLs[index],
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
+                Icon(iconData, size: 48),
                 SizedBox(height: 8),
-                FutureBuilder<FileStat>(
-                  future: File(downloadURLs[index]).stat(),
+                FutureBuilder<firebase_storage.FullMetadata>(
+                  future: firebase_storage.FirebaseStorage.instance.ref(url).getMetadata(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();
                     }
                     if (snapshot.hasData) {
-                      final fileSize = _formatBytes(snapshot.data!.size);
-                      final modifiedTime = snapshot.data!.modified;
+                      final fileSize = _formatBytes(snapshot.data!.size!.toInt());
+                      final modifiedTime = _formatModifiedDate(snapshot.data!.timeCreated!);
 
                       return Column(
                         children: [
+                          Text(
+                            'File Type: $fileType',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          SizedBox(height: 4),
                           Text(
                             'File Size: $fileSize',
                             style: TextStyle(fontSize: 14),
                           ),
                           SizedBox(height: 4),
                           Text(
-                            'Modified: ${modifiedTime.toString()}',
+                            'Modified: $modifiedTime',
                             style: TextStyle(fontSize: 14),
                           ),
                         ],
@@ -227,6 +235,20 @@ class _DownloadFilesScreenState extends State<DownloadFilesScreen> {
     );
   }
 
+  String _formatModifiedDate(DateTime modifiedDate) {
+    final format = DateFormat.MMMMd('en_US');
+    return format.format(modifiedDate);
+  }
+
+
+  bool _isImageFile(String url) {
+    final imageExtensions = ['.png', '.jpg', '.jpeg', '.gif'];
+    final extension = url.substring(url.lastIndexOf('.'));
+    return imageExtensions.contains(extension);
+  }
+
+
+
   String _formatBytes(int bytes) {
     if (bytes <= 0) return '0 B';
     const suffixes = ['B', 'KB', 'MB', 'GB', 'TB'];
@@ -240,55 +262,21 @@ class _DownloadFilesScreenState extends State<DownloadFilesScreen> {
     return '$formattedValue ${suffixes[i]}';
   }
 
-
   Widget buildDownloadCompletedView() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('File downloaded successfully.'),
-          ElevatedButton(
-            onPressed: () {
-              _downloadFilesBloc.add(FetchDownloadURLsEvent());
-            },
-            child: Text('Refresh'),
-          ),
-        ],
+      child: Text(
+        'Download completed!',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
   }
 
   Widget buildDownloadFailedView() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('Failed to download file.'),
-          ElevatedButton(
-            onPressed: () {
-              _downloadFilesBloc.add(FetchDownloadURLsEvent());
-            },
-            child: Text('Retry'),
-          ),
-        ],
+      child: Text(
+        'Download failed. Please try again.',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
-    );
-  }
-}
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Download Files Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: DownloadFilesScreen(),
     );
   }
 }
