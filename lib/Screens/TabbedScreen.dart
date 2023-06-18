@@ -4,10 +4,12 @@ import 'NotificationsScreen.dart';
 import 'LocationScreen.dart';
 import 'MachineListScreen.dart';
 import 'SettingsButton.dart';
+import 'DashboardScreen.dart';
 import 'image_picker_dialog.dart';
  import 'package:file_picker/file_picker.dart';
  import 'file_picker_dialog.dart';
  import 'DownloadFilesScreen.dart';
+ import 'QR code.dart';
 
 class TabbedScreen extends StatelessWidget {
   @override
@@ -99,6 +101,15 @@ class TabbedScreen extends StatelessWidget {
                   );
                 },
 
+              ),TextButton(
+                child: Text("QR Code "),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DownloadFilesScreen()),
+                  );
+                },
+
               ),
 
             ],
@@ -116,18 +127,6 @@ class TabbedScreen extends StatelessWidget {
     );
   }
 
-  // void selectImage(BuildContext context) async {
-  //   final ImagePicker _picker = ImagePicker();
-  //   final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-  //
-  //   if (image != null) {
-  //
-  //   } else {
-  //
-  //   }
-  //
-  //   Navigator.of(context).pop(); // Close the dialog after image selection
-  // }
 
   void selectDocument(BuildContext context) async {
     final result = await FilePicker.platform.pickFiles();
@@ -154,62 +153,7 @@ class TabbedScreen extends StatelessWidget {
   }
 }
 
-class DashboardScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        height: double.infinity,
-        child: Stack(
-          children: [
-            Positioned(
-              left: 0,
-              top: 0,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height / 3,
-                child: Image.asset(
-                  'assets/images/img.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-            Positioned(
-              left: 0,
-              top: MediaQuery.of(context).size.height / 3,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height / 3,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
-                  child: Image.asset(
-                    'assets/images/img2.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 0,
-              top: MediaQuery.of(context).size.height * 2 / 3,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height / 3,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
-                  child: Image.asset(
-                    'assets/images/img3.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+
 
 void main() {
   runApp(MyApp());

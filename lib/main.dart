@@ -6,6 +6,7 @@ import 'package:myapp/theme/theme_constants.dart';
 import 'package:myapp/theme/theme_manager.dart';
 import 'package:provider/provider.dart';
 import 'Screens/TabbedScreen.dart';
+import 'Screens/DashboardScreen2.dart';
 
 void main() async {
 	WidgetsFlutterBinding.ensureInitialized();
@@ -193,6 +194,17 @@ class _LoginScreenState extends State<LoginScreen> {
 									//  Navigate to Terms and Conditions screen
 								},
 								child: Text('tabs screen->'),
+							),TextButton(
+								onPressed: () {
+									Navigator.push(
+										context,
+										MaterialPageRoute(
+											builder: (context) => StackedBarChart(),
+										),
+									);
+									//  Navigate to Terms and Conditions screen
+								},
+								child: Text('Dashboard2 screen->'),
 							),
 						],
 					),
