@@ -38,7 +38,7 @@ class TabbedScreen extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            DashboardScreen(),
+            // DashboardScreen(),
             MachineListScreen(),
             LocationScreen(),
             NotificationsScreen(),

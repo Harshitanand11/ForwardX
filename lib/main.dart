@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:myapp/Screens/NotificationsScreen.dart';
 import 'package:myapp/theme/theme_constants.dart';
 import 'package:myapp/theme/theme_manager.dart';
 import 'package:provider/provider.dart';
 import 'Screens/TabbedScreen.dart';
 import 'Screens/DashboardScreen2.dart';
+import 'package:go_router/go_router.dart';
 
 void main() async {
 	WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +20,21 @@ void main() async {
 		),
 	);
 }
+///https://www.google.com/
+
+ GoRouter _appRoute =GoRouter(routes: <RouteBase>[
+	 GoRoute(path: "/",
+	 builder: (BuildContext context,GoRouterState state){
+		 return  LoginScreen();
+	 }
+	 ),GoRoute(path: "/Notification",
+	 builder: (BuildContext context,GoRouterState state){
+		 return  NotificationsScreen();
+	 }
+	 ),
+ ]
+
+ );
 
 class MyApp extends StatelessWidget {
 	@override
