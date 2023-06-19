@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:myapp/Screens/LocationScreen.dart';
 import 'package:myapp/Screens/NotificationsScreen.dart';
 import 'package:myapp/theme/theme_constants.dart';
 import 'package:myapp/theme/theme_manager.dart';
@@ -9,6 +10,9 @@ import 'package:provider/provider.dart';
 import 'Screens/TabbedScreen.dart';
 import 'Screens/DashboardScreen2.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter/services.dart';
+import 'package:uni_links/uni_links.dart';
+
 
 void main() async {
 	WidgetsFlutterBinding.ensureInitialized();
@@ -16,27 +20,64 @@ void main() async {
 	runApp(
 		ChangeNotifierProvider(
 			create: (_) => ThemeManager(),
-			child: MyApp(),
+			child: MyApp(notificationScreen: false,),
 		),
 	);
+	handleDeepLink();
 }
-///https://www.google.com/
 
- GoRouter _appRoute =GoRouter(routes: <RouteBase>[
-	 GoRoute(path: "/",
-	 builder: (BuildContext context,GoRouterState state){
-		 return  LoginScreen();
-	 }
-	 ),GoRoute(path: "/Notification",
-	 builder: (BuildContext context,GoRouterState state){
-		 return  NotificationsScreen();
-	 }
-	 ),
- ]
+void handleDeepLink() async {
+	// Request permission to access the device's deep link data
+	await initPlatformState();
 
- );
+	final initialLink = await getInitialLink();
+
+	processDeepLink(initialLink!);
+
+	linkStream.listen((String? link) {
+		if (link != null) {
+			processDeepLink(link);
+		}
+	}, onError: (err) {
+		print(err);
+	});
+}
+
+Future<void> initPlatformState() async {
+	try {
+		await getUriLinksStream().listen((Uri? uri) {
+			if (uri != null) {
+				processDeepLink(uri.toString());
+			}
+		});
+	} on PlatformException {
+		// Handle platform-specific exceptions if necessary
+	}
+}
+
+void processDeepLink(String link) {
+	if (link != null) {
+		// Extract the desired path segment from the link
+		final pathSegments = Uri.parse(link).pathSegments;
+		if (pathSegments.isNotEmpty) {
+			final screen = pathSegments.first;
+
+			// Navigate to the appropriate screen based on the extracted path segment
+			if (screen == 'notificationScreen') {
+				runApp(MyApp(notificationScreen: true));
+			} else if (screen == 'screen2') {
+				runApp(MyApp(notificationScreen: false));
+			}
+			// Add more conditions for other screens as needed
+		}
+	}
+}
 
 class MyApp extends StatelessWidget {
+	final bool notificationScreen;
+
+	MyApp({required this.notificationScreen});
+
 	@override
 	Widget build(BuildContext context) {
 		return Consumer<ThemeManager>(
@@ -47,7 +88,7 @@ class MyApp extends StatelessWidget {
 					theme: lightTheme,
 					darkTheme: darkTheme,
 					themeMode: themeManager.themeMode,
-					home: SplashScreen(),
+					home: notificationScreen ? NotificationsScreen() : SplashScreen(),
 					routes: {
 						'/login': (context) => LoginScreen(),
 					},
