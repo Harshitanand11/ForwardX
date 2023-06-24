@@ -9,7 +9,7 @@ import 'image_picker_dialog.dart';
  import 'package:file_picker/file_picker.dart';
  import 'file_picker_dialog.dart';
  import 'DownloadFilesScreen.dart';
- import 'QR code.dart';
+ import 'Translate.dart';
 
 class TabbedScreen extends StatelessWidget {
   @override
@@ -102,11 +102,11 @@ class TabbedScreen extends StatelessWidget {
                 },
 
               ),TextButton(
-                child: Text("QR Code "),
+                child: Text("Translate "),
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => DownloadFilesScreen()),
+                    MaterialPageRoute(builder: (context) => TranslateScreen()),
                   );
                 },
 
