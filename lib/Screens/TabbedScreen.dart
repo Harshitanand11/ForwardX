@@ -163,11 +163,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
       title: 'Tabbed Screen',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: TabbedScreen(),
+
     );
   }
 }
