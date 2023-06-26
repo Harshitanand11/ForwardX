@@ -1,0 +1,37 @@
+{
+  "helloWorld": "Hello World!",
+  "@helloWorld": {
+    "description": "The conventional newborn programmer greeting"
+
+  },
+  "choose_language": "Choose Language",
+  "@choose_language": {
+    "description": "Label for the language selection"
+  },
+  "select_language": "Select Language",
+  "@select_language": {
+    "description": "Label for the language selection"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  "hindi": "Hindi",
+  "@hindi": {
+    "description": "Hindi language option"
+  },
+  "amount_us": "Amount (USD)",
+  "@amount_us": {
+    "description": "Label for the amount in USD"
+  },
+  "hello": "Hello {username}",
+  "@hello":{
+  "description":"A welcome Message",
+  "placeholders":{
+  "username":{
+  "type":"String"
+  }
+
+  }
+  }
+}

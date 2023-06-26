@@ -1,0 +1,27 @@
+{
+  "helloWorld": "नमस्ते दुनिया!",
+  "@helloWorld": {
+    "description": "नवजात प्रोग्रामर का प्रसिद्ध स्वागत वाक्य"
+  },
+  "choose_language": "भाषा चुनें",
+  "@choose_language": {
+    "description": "भाषा चयन के लिए लेबल"
+  },
+  "select_language": "भाषा चुनें",
+  "@select_language": {
+    "description": "भाषा चयन के लिए लेबल"
+  },
+  "english": "अंग्रेज़ी",
+  "@english": {
+    "description": "अंग्रेज़ी भाषा विकल्प"
+  },
+  "hindi": "हिन्दी",
+  "@hindi": {
+    "description": "हिन्दी भाषा विकल्प"
+  },
+  "amount_us": "राशि (डॉलर)",
+  "@amount_us": {
+    "description": "राशि (डॉलर) के लिए लेबल"
+  },
+  "hello":"नमस्ते {username}"
+}

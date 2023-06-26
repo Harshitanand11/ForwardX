@@ -55,6 +55,7 @@ dependencies:
   url_launcher: ^6.0.3
   firebase_dynamic_links: ^5.3.3
   fluent_ui: ^4.0.0
+  flutter_i18n: ^0.22.1
 
   flutter_localizations:
     sdk: flutter
@@ -72,6 +73,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_gen:
+
+
 
 
 
@@ -105,7 +109,8 @@ flutter:
     - assets/images/img3.png
     - assets/images/fowardx-logo-1.png
     - assets/images/icons8-google-48-3.png
-    - assets/i18n/
+    - assets/i18n/en.json
+    - assets/i18n/hi.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

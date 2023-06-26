@@ -1,7 +1,7 @@
 {
-  "chooseLanguage": "भाषा चुनें",
+  "choose_language": "भाषा चुनें",
+  "select_language": "भाषा चुनें",
   "english": "अंग्रेज़ी",
   "hindi": "हिन्दी",
-  "amountLabel": "राशि रुपये में",
-  "amountHint": "राशि दर्ज करें"
+  "amount_us": "राशि (डॉलर)"
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:myapp/Screens/DashboardScreen2.dart';
 import 'NotificationsScreen.dart';
 import 'LocationScreen.dart';
 import 'MachineListScreen.dart';
@@ -39,6 +40,7 @@ class TabbedScreen extends StatelessWidget {
         body: TabBarView(
           children: [
             // DashboardScreen(),
+
             MachineListScreen(),
             LocationScreen(),
             NotificationsScreen(),
@@ -163,13 +165,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       title: 'Tabbed Screen',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: TabbedScreen(),
-
     );
   }
 }

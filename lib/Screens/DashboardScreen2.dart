@@ -88,9 +88,9 @@ data: currentGraphData,
 
 
 return Scaffold(
-appBar: AppBar(
-title: Text('Stacked Bar Chart'),
-),
+// appBar: AppBar(
+// title: Text('Stacked Bar Chart'),
+// ),
 body: Padding(
 padding: EdgeInsets.all(16.0),
 child: Column(

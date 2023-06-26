@@ -1,7 +1,7 @@
 {
-  "chooseLanguage": "Choose Language",
+  "choose_language": "Choose Language",
+  "select_language": "Select Language",
   "english": "English",
-  "hindi": "हिन्दी'",
-  "amountLabel": "Amount in USD",
-  "amountHint": "Enter amount"
+  "hindi": "Hindi",
+  "amount_us": "Amount (USD)"
 }

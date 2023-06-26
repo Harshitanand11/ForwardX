@@ -302,7 +302,7 @@ import 'Screens/Translate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/locale.dart';
-import 'l10n.dart';
+
 
 
 void main() async {
@@ -386,15 +386,6 @@ class MyApp extends StatelessWidget {
             '/dashboard2': (context) => StackedBarChart(),
             '/notificationScreen':(context)=>NotificationsScreen(),
           },
-          localizationsDelegates: [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            // Add the following line for Locale delegate
-            GlobalCupertinoLocalizations.delegate,
-          ],
-            supportedLocales: L10n.all,
-
 
         );
       },
