@@ -11,7 +11,7 @@ import 'image_picker_dialog.dart';
  import 'file_picker_dialog.dart';
  import 'DownloadFilesScreen.dart';
  import 'Translate.dart';
-
+import 'package:myapp/screen/pages/mobile/mobile_screen.dart';
 class TabbedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -109,6 +109,15 @@ class TabbedScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => TranslateScreen()),
+                  );
+                },
+
+              ),TextButton(
+                child: Text("Linkedin "),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
                   );
                 },
 
