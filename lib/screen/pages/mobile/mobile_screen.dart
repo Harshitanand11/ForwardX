@@ -179,6 +179,7 @@ class CompanyDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Company Details'),
+        backgroundColor: Color.fromRGBO(10, 102, 194, 1),
       ),
       body: ListView(
         children: [
@@ -192,9 +193,18 @@ class CompanyDetailsScreen extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: Text(company.description),
+            title: Text('Mobile Developer Intern',style: TextStyle(fontSize: 17,fontWeight: FontWeight.w500,),),
           ),
-          SizedBox(height: 16),
+          ListTile(
+            title: Row(
+              children: [
+
+                Text(company.description,style: TextStyle(color: Colors.green.shade800,fontWeight: FontWeight.bold)),
+                Text('.35 applicant',style: TextStyle(color: Colors.grey.shade700,fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+          // SizedBox(height: 5),
           ListTile(
             
             title: Row(
@@ -246,10 +256,10 @@ class CompanyDetailsScreen extends StatelessWidget {
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20.0),
-                          side: BorderSide(color: Colors.blue),
+                          side: BorderSide(color: Colors.blue.shade800),
                         ),
                       ),
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.blue.shade800),
                     ),
                   ),
                 ),
@@ -260,12 +270,12 @@ class CompanyDetailsScreen extends StatelessWidget {
                   width: 150,
                   child: TextButton(
                     onPressed: () {},
-                    child: Text('Save', style: TextStyle(color: Colors.blue)),
+                    child: Text('Save', style: TextStyle(color: Colors.blue.shade800)),
                     style: ButtonStyle(
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20.0),
-                          side: BorderSide(color: Colors.blue),
+                          side: BorderSide(color: Colors.blue.shade800),
                         ),
                       ),
                     ),
@@ -298,23 +308,24 @@ class HomeScreen extends StatelessWidget {
     final companies = [
       Company(
         'Amazon',
-        'Amazon.com, Inc. is an American multinational technology company based in Seattle, Washington. It focuses on e-commerce, cloud computing, digital streaming, and artificial intelligence.',
+        ' 3 hours ago',
         'https://icon2.cleanpng.com/20180320/roq/kisspng-amazon-com-the-exposed-saga-computer-icons-app-sto-amazon-icon-socialmedia-iconset-uiconstock-5ab1b9d01d9a65.8306302815215968801213.jpg',
       ),
       Company(
         'Microsoft',
-        'Microsoft Corporation is an American multinational technology company that develops, manufactures, licenses, supports, and sells computer software, consumer electronics, personal computers, and related services.',
+        '3 hours ago',
         'https://icon2.cleanpng.com/20180516/jsw/kisspng-start-menu-windows-7-button-microsoft-5afc309aab9321.9654894815264769547028.jpg',
       ),
       Company(
         'Google',
-        'Google LLC is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, search engines, cloud computing, software, and hardware.',
+        '3 hours ago',
         'https://banner2.cleanpng.com/20171216/6c0/google-png-5a3554027e9924.3682726615134443545186.jpg',
       ),
       Company(
         'EY',
 
-        'AT EY (formerly Ernst & Young) is a multinational professional services network with headquarters in London, England. It provides assurance, tax, consulting, and advisory services to companies.',
+        '3 hours ago',
+
         'https://icon2.cleanpng.com/20180527/zkh/kisspng-ernst-young-accounting-finance-accountant-compan-5b0a8ebaa27f47.7884564315274185546656.jpg',
       ),
     ];
@@ -394,6 +405,11 @@ class HomeScreen extends StatelessWidget {
                       'Actively recruiting',
                       style: TextStyle(color: Colors.grey.shade700),
                     ),
+                    // SizedBox(width: 3,),
+                    // Icon(Icons.send,color: Colors.grey.shade700,),
+                    // Text('Message the job poster ',style: TextStyle(
+                    //   color: Colors.grey,
+                    // ),),
                   ],
                 ),
 
@@ -401,7 +417,7 @@ class HomeScreen extends StatelessWidget {
                   onPressed: () => navigateToCompanyDetails(context, company),
                   child: Center(child: Text('Apply')),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue,
+                    primary: Colors.blue.shade800,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(32.0),
                     ),
