@@ -1,16 +1,28 @@
-# test
+# Forwardx
 
-A new Flutter project.
+Project Title: ForwardX:Machine Maintenance App
 
-## Getting Started
+Project Overview:
 
-This project is a starting point for a Flutter application.
+This project is developed as machine maintenance app that will help businesses to improve the uptime of their machines. 
+The app tracks the status of machines, schedule maintenance tasks, and generate reports on the status of machines.
+The app is implemented using Flutter, Dart, Firebase, Google Auth, and Figma.
 
-A few resources to get you started if this is your first Flutter project:
+Problem Statement:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Machine breakdowns can lead to lost productivity, safety hazards, and financial losses. Businesses need a way to track the status of their machines and schedule maintenance tasks in order to prevent breakdowns.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Solution:
+
+The machine maintenance app will provide businesses with a way to track the status of their machines and schedule maintenance tasks. The app will also generate reports on the status of machines, which will help businesses to identify areas where they can improve their maintenance practices.
+
+Implementation:
+
+The app is  implemented using the following technologies:
+
+Flutter
+Dart
+Firebase
+Google Auth
+Figma
+
