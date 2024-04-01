@@ -1,3 +1,9 @@
+<h1 align="center" style="border-bottom: none">
+    <b>
+        <a ForwardX </a><br>
+    </b>
+    ⭐️ ForwardX:  The Machine Maintenance App ⭐️ <br>
+</h1>
 
 
 <img width="905" alt="image" src="https://github.com/Harshitanand11/ForwardX/assets/83498313/6ad2132e-d73d-47ec-b7b9-b201d11349cb">
