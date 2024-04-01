@@ -42,6 +42,7 @@ ForwardX is a machine maintenance app designed to prevent breakdowns by tracking
 - **Download Files**: Access system-related files
 - **Bilingual Support**: Available in English and Hindi
 - **Log out / Delete account**: Easily manage account settings
+  
   ALL Features-https://youtu.be/T44VYEsUHN0
   
 
